@@ -128,7 +128,7 @@ const UpdateForm = () => {
                               id="male-1"
                               value="MALE"
                               onChange={genderInputHandler}
-                              checked={student.gender === "MALE"}
+                              checked={gender === "MALE"}
                           />
                           <Form.Check
                               inline
@@ -138,7 +138,7 @@ const UpdateForm = () => {
                               id="female-2"
                               value="FEMALE"
                               onChange={genderInputHandler}
-                              checked={student.gender === "FEMALE"}
+                              checked={gender === "FEMALE"}
                           />
                           </div>
                       </Form.Group>

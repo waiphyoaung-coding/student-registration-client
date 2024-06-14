@@ -13,7 +13,7 @@ const StudentTablePage = () => {
   const navigate = useNavigate();
 
   const [students, setStudents] = useState(studentList);
-  const searchHandler = e => setStudents(studentList.filter(student => student.studentID.toString().includes(e.target.value) || student.name.toString().toLowerCase().includes(e.target.value)))
+  const searchHandler = e => setStudents(studentList.filter(student => student.studentID.toString().includes(e.target.value) || student.name.toString().toLowerCase().includes((e.target.value).toLowerCase())))
 
   useEffect(()=>{
     dispatch(fetchAllStudent())
