@@ -94,19 +94,7 @@ const CreateForm = () => {
             setState('YANGON')
             setPhoneNumber('')
             setHobby([])
-            setReports(
-                [
-                    {
-                        academicYear:0,
-                        myanmar:0,
-                        english:0,
-                        mathematic:0,
-                        history:0,
-                        science:0,
-                        total:0
-                    }
-                ]
-            )
+            setReports([])
         }
     }
 
@@ -118,7 +106,7 @@ const CreateForm = () => {
 
     
     return(
-        <Container>
+        <Container className="px-5">
             <Form onSubmit={onSubmit}>
                 <Row sm={1} md={2} className="mt-5 mb-5 d-flex justify-content-evenly">
                     <Col sm="10" md="5">
@@ -130,7 +118,7 @@ const CreateForm = () => {
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="DOBInput">Date Of Birth : </Form.Label>
-                            <Form.Control value={dob} onChange={dobInputHandler} className="w-50 me-5" type="date" placeholder="Enter Date"></Form.Control>
+                            <Form.Control value={dob} onChange={dobInputHandler} className="w-50 me-5" type="date" max={new Date().toISOString().split("T")[0]} placeholder="Enter Date"></Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -206,7 +194,7 @@ const CreateForm = () => {
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="phoneInput">PhoneNumber : </Form.Label>
-                            <Form.Control value={phonenumber} onChange={phoneNumberInputHandler} className="w-50 me-5" type="number" min={0} placeholder="Enter Phone Number"></Form.Control>
+                            <Form.Control value={phonenumber} onChange={phoneNumberInputHandler} className="w-50 me-5" type="tel" min={0} maxLength={11} placeholder="Enter Phone Number"></Form.Control>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -233,14 +221,14 @@ const CreateForm = () => {
                 </Row>
                 <Row className="mt-5 mb-3">
                     <Col sm="3">
-                        <Button variant="primary"
+                        <Button variant="primary" 
                         onClick={() => addNew()}
                         >
                             Add <Plus />
                         </Button>
                     </Col>
                 </Row>
-                <Row sm={8} className="d-flex justify-content-evenly mb-3 bg-primary py-3 text-light">
+                <Row sm={8} className="d-flex justify-content-evenly bg-primary py-3 text-light">
                     <Col className="text-center">Year</Col>
                     <Col className="text-center">Myanmar</Col>
                     <Col className="text-center">English</Col>
@@ -252,11 +240,12 @@ const CreateForm = () => {
                 </Row>
                 {
                     reports?.map((report,index)=>
-                        <Row sm={8} className="d-flex justify-content-evenly mb-3">
+                        <Row key={index} sm={8} className="d-flex justify-content-evenly py-3 border bg-light">
                                 <Col className="justify-content-center">
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={new Date().getFullYear()}
                                         value={report.academicYear}
                                         onChange={(e) => handleReportChange(index, 'academicYear', e.target.value)}
                                     />
@@ -265,6 +254,7 @@ const CreateForm = () => {
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={100}
                                         value={report.myanmar}
                                         onChange={(e) => handleReportChange(index, 'myanmar', e.target.value)}
                                     />
@@ -273,6 +263,7 @@ const CreateForm = () => {
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={100}
                                         value={report.english}
                                         onChange={(e) => handleReportChange(index, 'english', e.target.value)}
                                     />
@@ -281,6 +272,7 @@ const CreateForm = () => {
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={100}
                                         value={report.mathematic}
                                         onChange={(e) => handleReportChange(index, 'mathematic', e.target.value)}
                                     />
@@ -289,6 +281,7 @@ const CreateForm = () => {
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={100}
                                         value={report.history}
                                         onChange={(e) => handleReportChange(index, 'history', e.target.value)}
                                     />
@@ -297,6 +290,7 @@ const CreateForm = () => {
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={100}
                                         value={report.science}
                                         onChange={(e) => handleReportChange(index, 'science', e.target.value)}
                                     />
@@ -305,6 +299,7 @@ const CreateForm = () => {
                                     <Form.Control
                                         type="number"
                                         min={0}
+                                        max={500}
                                         value={report.total}
                                         onChange={(e) => handleReportChange(index, 'total', e.target.value)}
                                     />

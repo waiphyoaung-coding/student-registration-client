@@ -93,32 +93,32 @@ const UpdateForm = () => {
 
   
   return(
-      <Container>
+      <Container className='px-5'>
           <Form onSubmit={onSubmit}>
               <Row sm={1} md={2} className="mt-5 mb-5 d-flex justify-content-evenly">
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="IdInput">Student ID : </Form.Label>
+                          <Form.Label control-id="IdInput">Student ID : </Form.Label>
                           <Form.Control value={studentID} onChange={idInputHandler} className="w-50 me-5" type="text" placeholder="Enter ID"></Form.Control>
                       </Form.Group>
                   </Col>
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="DOBInput">Date Of Birth : </Form.Label>
-                          <Form.Control value={dob} onChange={dobInputHandler} className="w-50 me-5" type="date" placeholder="Enter Date"></Form.Control>
+                          <Form.Label control-id="DOBInput">Date Of Birth : </Form.Label>
+                          <Form.Control value={dob} onChange={dobInputHandler} className="w-50 me-5" type="date" max={new Date().toISOString().split("T")[0]} placeholder="Enter Date"></Form.Control>
                       </Form.Group>
                   </Col>
               </Row>
               <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
                   <Col sm="10" md="5">
                   <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="NameInput">Student Name : </Form.Label>
+                          <Form.Label control-id="NameInput">Student Name : </Form.Label>
                           <Form.Control value={name} onChange={nameInputHandler} className="w-50 me-5" type="text" placeholder="Enter Name"></Form.Control>
                       </Form.Group>
                   </Col>
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="NameInput">Choose Gender : </Form.Label>
+                          <Form.Label control-id="NameInput">Choose Gender : </Form.Label>
                           <div className="w-50 me-5 d-flex justify-content-evenly">
                           <Form.Check
                               inline
@@ -147,13 +147,13 @@ const UpdateForm = () => {
               <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="NRCInput">Student NRC : </Form.Label>
+                          <Form.Label control-id="NRCInput">Student NRC : </Form.Label>
                           <Form.Control value={nrc} onChange={nrcInputHandler} className="w-50 me-5" type="text" placeholder="Enter NRC"></Form.Control>
                       </Form.Group>
                   </Col>
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="stateInput">State/Division : </Form.Label>
+                          <Form.Label control-id="stateInput">State/Division : </Form.Label>
                           <Form.Select value={state} onChange={stateInputHandler} className="w-50 me-5" aria-label="states-selection">
                               <option value="MAGWAY">MAGWAY</option>
                               <option value="CHIN">CHIN</option>
@@ -176,27 +176,27 @@ const UpdateForm = () => {
               <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="emailInput">Email : </Form.Label>
+                          <Form.Label control-id="emailInput">Email : </Form.Label>
                           <Form.Control value={email} onChange={emailInputHandler} className="w-50 me-5" type="email" placeholder="Enter Email"></Form.Control>
                       </Form.Group>
                   </Col>
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="phoneInput">PhoneNumber : </Form.Label>
-                          <Form.Control value={phonenumber} onChange={phoneNumberInputHandler} className="w-50 me-5" type="number" min={0} placeholder="Enter Phone Number"></Form.Control>
+                          <Form.Label control-id="phoneInput">PhoneNumber : </Form.Label>
+                          <Form.Control value={phonenumber} onChange={phoneNumberInputHandler} className="w-50 me-5" type="tel" min={0} maxLength={11} placeholder="Enter Phone Number"></Form.Control>
                       </Form.Group>
                   </Col>
               </Row>
               <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="addressInput">Address : </Form.Label>
+                          <Form.Label control-id="addressInput">Address : </Form.Label>
                           <Form.Control value={address} onChange={addressInputHandler} className="w-50 me-5" as="textarea" rows={2} placeholder="Enter Address"></Form.Control>
                       </Form.Group>
                   </Col>
                   <Col sm="10" md="5">
                       <Form.Group className="d-flex justify-content-between">
-                          <Form.Label controlId="HobbyInput">Choose Hobby : </Form.Label>
+                          <Form.Label control-id="HobbyInput">Choose Hobby : </Form.Label>
                           <div className="w-50 me-5">
                               <Form.Check type="checkbox" value="Football" onChange={hobbyInputHandler} id="Football-checkbox" label="Football" checked={hobby?.some(h => h === "Football")}/>
                               <Form.Check type="checkbox" value="Reading" onChange={hobbyInputHandler} id="Reading-checkbox" label="Reading" checked={hobby?.some(h => h === "Reading")}/>
@@ -217,7 +217,7 @@ const UpdateForm = () => {
                       </Button>
                   </Col>
               </Row>
-              <Row sm={8} className="d-flex justify-content-evenly mb-3 bg-info py-3 text-light">
+              <Row sm={8} className="d-flex justify-content-evenly bg-primary py-3 text-light">
                   <Col className="text-center">Year</Col>
                   <Col className="text-center">Myanmar</Col>
                   <Col className="text-center">English</Col>
@@ -229,11 +229,12 @@ const UpdateForm = () => {
               </Row>
               {
                   reports?.map((report,index)=>
-                      <Row sm={8} className="d-flex justify-content-evenly mb-3">
+                      <Row key={index} sm={8} className="d-flex justify-content-evenly py-3 border bg-light">
                               <Col className="justify-content-center">
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={new Date().getFullYear()}
                                       value={report.academicYear}
                                       onChange={(e) => handleReportChange(index, 'academicYear', e.target.value)}
                                   />
@@ -242,6 +243,7 @@ const UpdateForm = () => {
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={100}
                                       value={report.myanmar}
                                       onChange={(e) => handleReportChange(index, 'myanmar', e.target.value)}
                                   />
@@ -250,6 +252,7 @@ const UpdateForm = () => {
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={100}
                                       value={report.english}
                                       onChange={(e) => handleReportChange(index, 'english', e.target.value)}
                                   />
@@ -258,6 +261,7 @@ const UpdateForm = () => {
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={100}
                                       value={report.mathematic}
                                       onChange={(e) => handleReportChange(index, 'mathematic', e.target.value)}
                                   />
@@ -266,6 +270,7 @@ const UpdateForm = () => {
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={100}
                                       value={report.history}
                                       onChange={(e) => handleReportChange(index, 'history', e.target.value)}
                                   />
@@ -274,6 +279,7 @@ const UpdateForm = () => {
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={100}
                                       value={report.science}
                                       onChange={(e) => handleReportChange(index, 'science', e.target.value)}
                                   />
@@ -282,6 +288,7 @@ const UpdateForm = () => {
                                   <Form.Control
                                       type="number"
                                       min={0}
+                                      max={500}
                                       value={report.total}
                                       onChange={(e) => handleReportChange(index, 'total', e.target.value)}
                                   />
