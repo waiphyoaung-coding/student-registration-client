@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import StudentTable from '../components/StudentTable';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllStudent, getAllStudents, getFetchStatus } from '../slice/StudentSlice';
-import { Button, Col, Container, Form, InputGroup, Row, Table } from 'react-bootstrap';
-import { Plus } from 'react-bootstrap-icons';
+import { excelExport, excelImport, fetchAllStudent, getAllStudents, getFetchStatus, getImportStatus } from '../slice/StudentSlice';
+import { Button, Col, Container, Form, InputGroup, Modal, Row, Table } from 'react-bootstrap';
+import { Download, Plus } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../components/PaginationComponent';
 const StudentTablePage = () => {
   const status = useSelector(getFetchStatus);
   const studentList = useSelector(getAllStudents);
+  const importStatus = useSelector(getImportStatus);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,6 +22,11 @@ const StudentTablePage = () => {
   useEffect(() => {
     setStudents(studentList);
   }, [studentList]);
+  useEffect(()=>{
+    if(status === 'idle'){
+      dispatch(fetchAllStudent())
+    }
+  },[status,dispatch])
 
   const [currentPage, setCurrentPage] = useState(1);
   const totalItems = studentList.length; 
@@ -53,17 +59,36 @@ const StudentTablePage = () => {
   if(status === "failed"){
     content = "Failed to Fetch!!"
   }
+
+  const [file, setFile] = useState(null);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleImport = () => {
+    if(file){
+      const formData = new FormData();
+      formData.append('file', file);
+      dispatch(excelImport(formData));
+      setShow(false)
+    }else{
+      console.log("imported file is empty.")
+    }
+  }
+  
+  const handleExport = async () => {
+    dispatch(excelExport())
+  };
   return (
     <>
     <Container>
-      <Row className='d-flex justify-content-between my-3'>
-        <Col sm="2">
-          <Button variant='primary' 
-          onClick={() => {navigate(`/create`)}}>
-            New <Plus />
-          </Button>
-        </Col>
-        <Col sm="5">
+      <Row className='d-flex justify-content-between mt-5'>
+        <Col sm="4">
           <InputGroup className="mb-3">
             <Form.Control
               type='search'
@@ -72,6 +97,64 @@ const StudentTablePage = () => {
               onChange={searchHandler}
             />
           </InputGroup>
+        </Col>
+        <Col sm="5" className='d-flex justify-content-end py-2'>
+          <Button 
+          type='button' 
+          variant='primary' 
+          className='btn' 
+          onClick={handleShow}>
+              {
+                importStatus === 'loading'?
+                "Loading..." :
+                'Import ' 
+              }<Download />
+          </Button>
+          <Button 
+          type='button' 
+          variant='primary' 
+          className='btn mx-3' 
+          onClick={handleExport}>
+              Export <Download />
+          </Button>
+          <Button variant='primary' 
+          onClick={() => {navigate(`/create`)}}>
+            New <Plus />
+          </Button>
+
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header 
+            closeButton
+            className='bg-primary text-light'>
+              <Modal.Title>
+                Excel File Import
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group>
+                <Form.Label>
+                  Enter Excel File
+                </Form.Label>
+                <Form.Control 
+                type='file' 
+                onChange={handleFileChange}/>
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button 
+              variant="secondary" 
+              onClick={handleClose}>
+                Close
+              </Button>
+              <Button 
+              variant="primary" 
+              onClick={handleImport} 
+              disabled={!file}>
+                Import
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
         </Col>
       </Row>
       <Row>

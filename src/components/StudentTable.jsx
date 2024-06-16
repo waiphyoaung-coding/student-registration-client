@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Button } from 'react-bootstrap'
-import { PencilSquare, Trash } from 'react-bootstrap-icons'
+import { Download, PencilSquare, Trash } from 'react-bootstrap-icons'
 import { useDispatch } from 'react-redux'
-import { setUpdateStatusToIdle } from '../slice/StudentSlice'
+import { excelExportById, setUpdateStatusToIdle } from '../slice/StudentSlice'
 import { useNavigate } from 'react-router-dom'
 import ModalComponent from './ModalComponent'
 
@@ -14,6 +14,10 @@ const StudentTable = ({ student }) => {
   const handlerUpdate = () => {
     dispatch(setUpdateStatusToIdle());
     navigate(`/update/${student.id}`);
+  }
+
+  const handleExportById = async () => {
+    dispatch(excelExportById(student.id))
   }
 
   return (
@@ -34,6 +38,12 @@ const StudentTable = ({ student }) => {
           size='sm' 
           onClick={() => setShow(true)}>
             <Trash />
+          </Button>
+          <Button 
+          type='button' 
+          variant='primary' 
+          onClick={() => handleExportById()}>
+              <Download />
           </Button>
         </td>
       </tr>

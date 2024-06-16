@@ -3,6 +3,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Plus, Trash } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createStudent, getCreateStatus, setCreateStatusToIdle } from "../slice/StudentSlice";
+import { useNavigate } from "react-router-dom";
 
 const CreateForm = () => {
     const status = useSelector(getCreateStatus)
@@ -20,6 +21,7 @@ const CreateForm = () => {
     const [reports, setReports] = useState([])
         
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const canCreate = [studentID,name,nrc,dob,email,address,gender,state,phonenumber,hobby].every(Boolean)
 
     const idInputHandler = e => setStudentID(e.target.value)
@@ -44,13 +46,13 @@ const CreateForm = () => {
         setReports(
             [...reports,
                 {
-                    academicYear:0,
-                    myanmar:0,
-                    english:0,
-                    mathematic:0,
-                    history:0,
-                    science:0,
-                    total:0
+                    academicYear:'',
+                    myanmar:'',
+                    english:'',
+                    mathematic:'',
+                    history:'',
+                    science:'',
+                    total:''
                 }
             ]
         )
@@ -59,6 +61,10 @@ const CreateForm = () => {
     const handleReportChange = (index, field, value) => {
         const newReports = [...reports];
         newReports[index][field] = value;
+        const totalMarks = ['myanmar', 'english', 'mathematic', 'history', 'science'].reduce((total, subject) => {
+            return total + (Number(newReports[index][subject]) || 0);
+        }, 0);
+        newReports[index]['total'] = totalMarks;
         setReports(newReports);
     };
     
@@ -101,14 +107,20 @@ const CreateForm = () => {
     useEffect(()=>{
         if(status === "success"){
             dispatch(setCreateStatusToIdle())
+            navigate(`/`);
         }
-    },[status,dispatch])
+    },[status,dispatch,navigate])
 
     
     return(
         <Container className="px-5">
+            <Row className="d-flex justify-content-center py-5">
+                <Col sm="8" className="text-center">
+                <h3>Student Registration Form</h3>
+                </Col>
+            </Row>
             <Form onSubmit={onSubmit}>
-                <Row sm={1} md={2} className="mt-5 mb-5 d-flex justify-content-evenly">
+                <Row sm={1} md={2} className="mb-4 d-flex justify-content-evenly">
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="IdInput">Student ID : </Form.Label>
@@ -122,7 +134,7 @@ const CreateForm = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-                <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
+                <Row sm={1} md={2} className="mb-4 d-flex justify-content-evenly">
                     <Col sm="10" md="5">
                     <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="NameInput">Student Name : </Form.Label>
@@ -155,7 +167,7 @@ const CreateForm = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-                <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
+                <Row sm={1} md={2} className="mb-4 d-flex justify-content-evenly">
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="NRCInput">Student NRC : </Form.Label>
@@ -184,7 +196,7 @@ const CreateForm = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-                <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
+                <Row sm={1} md={2} className="mb-4 d-flex justify-content-evenly">
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="emailInput">Email : </Form.Label>
@@ -198,7 +210,7 @@ const CreateForm = () => {
                         </Form.Group>
                     </Col>
                 </Row>
-                <Row sm={1} md={2} className="mb-5 d-flex justify-content-evenly">
+                <Row sm={1} md={2} className="mb-4 d-flex justify-content-evenly">
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="addressInput">Address : </Form.Label>
@@ -246,6 +258,7 @@ const CreateForm = () => {
                                         type="number"
                                         min={0}
                                         max={new Date().getFullYear()}
+                                        placeholder="0000"
                                         value={report.academicYear}
                                         onChange={(e) => handleReportChange(index, 'academicYear', e.target.value)}
                                     />
@@ -255,6 +268,7 @@ const CreateForm = () => {
                                         type="number"
                                         min={0}
                                         max={100}
+                                        placeholder="0"
                                         value={report.myanmar}
                                         onChange={(e) => handleReportChange(index, 'myanmar', e.target.value)}
                                     />
@@ -264,6 +278,7 @@ const CreateForm = () => {
                                         type="number"
                                         min={0}
                                         max={100}
+                                        placeholder="0"
                                         value={report.english}
                                         onChange={(e) => handleReportChange(index, 'english', e.target.value)}
                                     />
@@ -273,6 +288,7 @@ const CreateForm = () => {
                                         type="number"
                                         min={0}
                                         max={100}
+                                        placeholder="0"
                                         value={report.mathematic}
                                         onChange={(e) => handleReportChange(index, 'mathematic', e.target.value)}
                                     />
@@ -282,6 +298,7 @@ const CreateForm = () => {
                                         type="number"
                                         min={0}
                                         max={100}
+                                        placeholder="0"
                                         value={report.history}
                                         onChange={(e) => handleReportChange(index, 'history', e.target.value)}
                                     />
@@ -291,17 +308,19 @@ const CreateForm = () => {
                                         type="number"
                                         min={0}
                                         max={100}
+                                        placeholder="0"
                                         value={report.science}
                                         onChange={(e) => handleReportChange(index, 'science', e.target.value)}
                                     />
                                 </Col>
                                 <Col className="justify-content-center">
                                     <Form.Control
+                                        readOnly
                                         type="number"
                                         min={0}
                                         max={500}
+                                        placeholder="0"
                                         value={report.total}
-                                        onChange={(e) => handleReportChange(index, 'total', e.target.value)}
                                     />
                                 </Col>
                                 <Col className="d-flex justify-content-center">
@@ -315,7 +334,7 @@ const CreateForm = () => {
                 <Row className="justify-content-center my-5">
                     <Col sm="2" className="justify-content-center">
                         <Button disabled={!canCreate} type="submit" variant="primary" className="w-100">
-                            {status === "loading"? "Loading..." : "Save"} 
+                            {status === "loading"? "Saving..." : "Save"} 
                         </Button>
                     </Col>
                 </Row>

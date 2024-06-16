@@ -24,6 +24,64 @@ export const fetchAllStudent = createAsyncThunk(
 //     }
 // )
 
+    export const excelExport = createAsyncThunk(
+        "excelExport",
+        async ()=> {
+            try {
+                const response = await axios.get(`${URL}/student/export`, {
+                    responseType: 'blob'
+                }); 
+    
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'students.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            } catch (error) {
+                console.error('Error exporting file:', error);
+            }
+        }
+    );
+
+    export const excelExportById = createAsyncThunk(
+        "excelExportById",
+        async (studentId)=> {
+            try {
+                const response = await axios.get(`${URL}/student/export/${studentId}`, {
+                    responseType: 'blob'
+                }); 
+    
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'student.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            } catch (error) {
+                console.error('Error exporting file:', error);
+            }
+        }
+    );
+
+    export const excelImport = createAsyncThunk(
+        "excelImport",
+        async (formData) => {
+            try {
+                const response = await axios.post(`${URL}/student/import`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                return {
+                    status : response.status
+                }
+            } catch (error) {
+                console.error('Error importing file:', error);
+            }
+        }
+    );
+
 export const createStudent = createAsyncThunk(
     "createStudent",
     async (student) => {
@@ -62,6 +120,7 @@ const initialState = {
     createStatus : 'idle',
     updateStatus : 'idle',
     deleteStatus : 'idle',
+    importStatus : 'idle',
     students : [],
     student : {},
     error : null
@@ -157,6 +216,16 @@ const StudentSlice = createSlice({
             state.deleteStatus = "failed";
             state.error = action.error;
         })
+        .addCase(excelImport.pending,(state)=>{
+            state.importStatus = "loading";
+        })
+        .addCase(excelImport.fulfilled,(state,action)=>{
+            if(action.payload?.status >= 400){
+                console.error('excel import error',action.error);
+            }
+            state.importStatus = 'success';
+            state.fetchStatus = 'idle';
+        })
     }
 })
 
@@ -165,6 +234,7 @@ export const getFetchStatus = state => state.student.fetchStatus;
 export const getFetchByIdStatus = state => state.student.fetchByIdStatus;
 export const getCreateStatus = state => state.student.createStatus;
 export const getUpdateStatus = state => state.student.updateStatus;
+export const getImportStatus = state => state.student.importStatus;
 export const getAllStudents = state => state.student.students;
 export const { setFerchStatusToIdle,setCreateStatusToIdle,setUpdateStatusToIdle } = StudentSlice.actions;
 export const getStudentById = (state,studentId) => 
