@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import StudentTable from '../components/StudentTable';
 import { useDispatch, useSelector } from 'react-redux';
-import { excelExport, excelImport, fetchAllStudent, getAllStudents, getFetchStatus, getImportStatus } from '../slice/StudentSlice';
-import { Button, Col, Container, Form, InputGroup, Modal, Row, Table } from 'react-bootstrap';
-import { Download, Plus } from 'react-bootstrap-icons';
+import { excelExport, excelFileDownload, excelImport, fetchAllStudent, getAllStudents, getFetchStatus, getImportStatus, setImportStatusToIdle } from '../slice/StudentSlice';
+import { Button, Col, Container, Form, FormControl, InputGroup, Modal, Row, Table } from 'react-bootstrap';
+import { BoxArrowInLeft, BoxArrowRight, Plus } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../components/PaginationComponent';
 const StudentTablePage = () => {
@@ -14,7 +14,11 @@ const StudentTablePage = () => {
   const navigate = useNavigate();
 
   const [students, setStudents] = useState(studentList);
-  const searchHandler = e => setStudents(studentList.filter(student => student.studentID.toString().includes(e.target.value) || student.name.toString().toLowerCase().includes((e.target.value).toLowerCase())))
+  const searchHandler = e => setStudents(studentList.filter(student => student.studentID.toString().includes((e.target.value).toString()) || student.name.toString().toLowerCase().includes((e.target.value).toLowerCase())))
+
+  const [file, setFile] = useState(null);
+  const [show, setShow] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(()=>{
     dispatch(fetchAllStudent())
@@ -26,15 +30,23 @@ const StudentTablePage = () => {
     if(status === 'idle'){
       dispatch(fetchAllStudent())
     }
-  },[status,dispatch])
+    if(importStatus === 'success'){
+      setShow(false)
+      dispatch(setImportStatusToIdle())
+    }
+  },[status,dispatch,importStatus])
 
   const [currentPage, setCurrentPage] = useState(1);
-  const totalItems = studentList.length; 
-  const itemsPerPage = 5; 
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const totalItems = studentList.length;
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value))
+  }
 
   let content;
   if(status === "loading"){
@@ -60,14 +72,15 @@ const StudentTablePage = () => {
     content = "Failed to Fetch!!"
   }
 
-  const [file, setFile] = useState(null);
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    dispatch(setImportStatusToIdle())
+  };
   const handleShow = () => setShow(true);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
+    console.log(file)
   };
 
   const handleImport = () => {
@@ -75,7 +88,10 @@ const StudentTablePage = () => {
       const formData = new FormData();
       formData.append('file', file);
       dispatch(excelImport(formData));
-      setShow(false)
+      setFile(null)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }else{
       console.log("imported file is empty.")
     }
@@ -84,6 +100,10 @@ const StudentTablePage = () => {
   const handleExport = async () => {
     dispatch(excelExport())
   };
+
+  const handleDownloadExcelFile = () => {
+    dispatch(excelFileDownload())
+  }
   return (
     <>
     <Container>
@@ -108,14 +128,15 @@ const StudentTablePage = () => {
                 importStatus === 'loading'?
                 "Loading..." :
                 'Import ' 
-              }<Download />
+              }<BoxArrowInLeft />
           </Button>
           <Button 
           type='button' 
           variant='primary' 
           className='btn mx-3' 
           onClick={handleExport}>
-              Export <Download />
+              {'Export '}
+              <BoxArrowRight />
           </Button>
           <Button variant='primary' 
           onClick={() => {navigate(`/create`)}}>
@@ -137,14 +158,28 @@ const StudentTablePage = () => {
                 </Form.Label>
                 <Form.Control 
                 type='file' 
-                onChange={handleFileChange}/>
+                onChange={handleFileChange}
+                ref={fileInputRef}/>
               </Form.Group>
+              {
+                importStatus === 'failed' && 
+                <p className="text-danger">
+                  make sure fields are valid and try agian.
+                </p>
+              }
             </Modal.Body>
-            <Modal.Footer>
+            <Modal.Footer className='d-flex justify-content-between'>
               <Button 
-              variant="secondary" 
+              variant="primary" 
+              onClick={handleDownloadExcelFile}>
+                Download Excel File
+              </Button>
+              <div className='d-flex justify-content-end'>
+              <Button 
+              className='mx-3'
+              variant="light" 
               onClick={handleClose}>
-                Close
+                Cancel
               </Button>
               <Button 
               variant="primary" 
@@ -152,6 +187,7 @@ const StudentTablePage = () => {
               disabled={!file}>
                 Import
               </Button>
+              </div>
             </Modal.Footer>
           </Modal>
 
@@ -175,13 +211,33 @@ const StudentTablePage = () => {
         </Table>
       </Row>
       <Row className='d-flex justify-content-end py-5'>
-        <Col sm="6" className='d-flex justify-content-end'>
+        <Col 
+        sm="2"
+        className='d-flex justify-content-end pb-3'>
+          <FormControl 
+          className='w-50'
+          readOnly
+          value={`Total-${studentList.length}`}/>
+        </Col>
+        <Col sm="5" className='d-flex justify-content-between'>
         {
           students?.length > 5 &&
+          <>
+          <Col sm="2">
+            <Form.Select value={itemsPerPage} onChange={handleItemsPerPageChange}>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+            </Form.Select>
+          </Col>
           <PaginationComponent 
           totalItems={totalItems} 
           itemsPerPage={itemsPerPage} 
           onPageChange={handlePageChange} />
+          </>
         }
         </Col>
       </Row>

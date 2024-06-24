@@ -24,6 +24,26 @@ export const fetchAllStudent = createAsyncThunk(
 //     }
 // )
 
+    export const excelFileDownload = createAsyncThunk(
+        "excelFileDownload",
+        async ()=> {
+            try {
+                const response = await axios.get(`${URL}/student/excel`, {
+                    responseType: 'blob'
+                }); 
+    
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'students.xlsx');
+                document.body.appendChild(link);
+                link.click();
+            } catch (error) {
+                console.error('Error exporting file:', error);
+            }
+        }
+    );
+
     export const excelExport = createAsyncThunk(
         "excelExport",
         async ()=> {
@@ -67,17 +87,13 @@ export const fetchAllStudent = createAsyncThunk(
     export const excelImport = createAsyncThunk(
         "excelImport",
         async (formData) => {
-            try {
-                const response = await axios.post(`${URL}/student/import`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-                return {
-                    status : response.status
+            const response = await axios.post(`${URL}/student/import`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
-            } catch (error) {
-                console.error('Error importing file:', error);
+            });
+            return {
+                status : response.status
             }
         }
     );
@@ -138,6 +154,9 @@ const StudentSlice = createSlice({
         },
         setUpdateStatusToIdle : (state) => {
             state.updateStatus = "idle";
+        },
+        setImportStatusToIdle : (state) => {
+            state.importStatus = 'idle';
         }
     },
     extraReducers(builder){
@@ -221,10 +240,14 @@ const StudentSlice = createSlice({
         })
         .addCase(excelImport.fulfilled,(state,action)=>{
             if(action.payload?.status >= 400){
+                state.importStatus = 'failed'
                 console.error('excel import error',action.error);
             }
             state.importStatus = 'success';
             state.fetchStatus = 'idle';
+        })
+        .addCase(excelImport.rejected,(state)=>{
+            state.importStatus = 'failed'
         })
     }
 })
@@ -236,7 +259,7 @@ export const getCreateStatus = state => state.student.createStatus;
 export const getUpdateStatus = state => state.student.updateStatus;
 export const getImportStatus = state => state.student.importStatus;
 export const getAllStudents = state => state.student.students;
-export const { setFerchStatusToIdle,setCreateStatusToIdle,setUpdateStatusToIdle } = StudentSlice.actions;
+export const { setFerchStatusToIdle,setCreateStatusToIdle,setUpdateStatusToIdle,setImportStatusToIdle } = StudentSlice.actions;
 export const getStudentById = (state,studentId) => 
     state.student.students.find( student => student.id === Number(studentId))
 

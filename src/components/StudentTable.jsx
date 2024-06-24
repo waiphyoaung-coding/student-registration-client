@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button } from 'react-bootstrap'
-import { Download, PencilSquare, Trash } from 'react-bootstrap-icons'
+import { BoxArrowRight, PencilSquare, Trash } from 'react-bootstrap-icons'
 import { useDispatch } from 'react-redux'
 import { excelExportById, setUpdateStatusToIdle } from '../slice/StudentSlice'
 import { useNavigate } from 'react-router-dom'
@@ -22,7 +22,7 @@ const StudentTable = ({ student }) => {
 
   return (
     <>
-      <tr>
+      <tr className='align-middle' style={{cursor : "pointer"}}>
         <th onClick={() => handlerUpdate()}>{student.studentID}</th>
         <td onClick={() => handlerUpdate()}>{student.name}</td>
         <td onClick={() => handlerUpdate()}>{student.nrc}</td>
@@ -43,7 +43,7 @@ const StudentTable = ({ student }) => {
           type='button' 
           variant='primary' 
           onClick={() => handleExportById()}>
-              <Download />
+              <BoxArrowRight />
           </Button>
         </td>
       </tr>

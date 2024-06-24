@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Plus, Trash } from "react-bootstrap-icons";
+import { ArrowReturnLeft, Plus, Trash } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { createStudent, getCreateStatus, setCreateStatusToIdle } from "../slice/StudentSlice";
 import { useNavigate } from "react-router-dom";
@@ -114,9 +114,17 @@ const CreateForm = () => {
     
     return(
         <Container className="px-5">
-            <Row className="d-flex justify-content-center py-5">
+            <Row className="d-flex justify-content-between py-5">
+                <Col sm="2">
+                    <ArrowReturnLeft 
+                    size={30}
+                    style={{cursor:"pointer"}}
+                    onClick={() => navigate('/')}/>
+                </Col>
                 <Col sm="8" className="text-center">
                 <h3>Student Registration Form</h3>
+                </Col>
+                <Col sm="2">
                 </Col>
             </Row>
             <Form onSubmit={onSubmit}>
@@ -220,14 +228,14 @@ const CreateForm = () => {
                     <Col sm="10" md="5">
                         <Form.Group className="d-flex justify-content-between">
                             <Form.Label control-id="HobbyInput">Choose Hobby : </Form.Label>
-                            <div className="w-50 me-5">
-                                <Form.Check type="checkbox" value="Football" onChange={hobbyInputHandler} id="Football-checkbox" label="Football" checked={hobby?.some(h => h === "Football")}/>
-                                <Form.Check type="checkbox" value="Reading" onChange={hobbyInputHandler} id="Reading-checkbox" label="Reading" checked={hobby?.some(h => h === "Reading")}/>
-                                <Form.Check type="checkbox" value="VideoGame" onChange={hobbyInputHandler} id="game-checkbox" label="Video game" checked={hobby?.some(h => h === "VideoGame")}/>
-                                <Form.Check type="checkbox" value="Painting" onChange={hobbyInputHandler} id="Painting-checkbox" label="Painting" checked={hobby?.some(h => h === "Painting")}/>
-                                <Form.Check type="checkbox" value="Fishing" onChange={hobbyInputHandler} id="Fishing-checkbox" label="Fishing" checked={hobby?.some(h => h === "Fishing")}/>
-                                <Form.Check type="checkbox" value="Baking" onChange={hobbyInputHandler} id="Baking-checkbox" label="Baking" checked={hobby?.some(h => h === "Baking")}/>
-                            </div>
+                            <Row className="w-75 d-flex justify-content-around">
+                                <Col><Form.Check type="checkbox" value="Football" onChange={hobbyInputHandler} id="Football-checkbox" label="Football" checked={hobby?.some(h => h === "Football")}/></Col>
+                                <Col><Form.Check type="checkbox" value="Reading" onChange={hobbyInputHandler} id="Reading-checkbox" label="Reading" checked={hobby?.some(h => h === "Reading")}/></Col>
+                                <Col><Form.Check type="checkbox" value="VideoGame" onChange={hobbyInputHandler} id="game-checkbox" label="Video game" checked={hobby?.some(h => h === "VideoGame")}/></Col>
+                                <Col><Form.Check type="checkbox" value="Painting" onChange={hobbyInputHandler} id="Painting-checkbox" label="Painting" checked={hobby?.some(h => h === "Painting")}/></Col>
+                                <Col><Form.Check type="checkbox" value="Fishing" onChange={hobbyInputHandler} id="Fishing-checkbox" label="Fishing" checked={hobby?.some(h => h === "Fishing")}/></Col>
+                                <Col><Form.Check type="checkbox" value="Baking" onChange={hobbyInputHandler} id="Baking-checkbox" label="Baking" checked={hobby?.some(h => h === "Baking")}/></Col>
+                            </Row>
                         </Form.Group>
                     </Col>
                 </Row>
